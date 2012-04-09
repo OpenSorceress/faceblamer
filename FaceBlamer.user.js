@@ -3,6 +3,8 @@
 // @namespace    FaceBlamer
 // @description  We don't like, we blame.
 // @version      0.2
+// @updateURL    http://userscripts.org/scripts/source/129890.user.js
+// @downloadURL  http://userscripts.org/scripts/source/129890.user.js
 // @require      http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
 // @include      http://*.facebook.com/284772814919879
 // @include      http://*.facebook.com/284772814919879/*
@@ -24,8 +26,6 @@ var strings = {
 lang = document.getElementById('facebook').getAttribute('lang');
 if (!strings[lang]) {
     lang = 'en'
-    
-    
 }
 
 var refresh_rate = 10;
