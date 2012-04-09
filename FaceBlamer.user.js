@@ -2,7 +2,7 @@
 // @name         FaceBlamer
 // @namespace    FaceBlamer
 // @description  We don't like, we blame.
-// @version      0.5
+// @version      0.6
 // @updateURL    http://userscripts.org/scripts/source/129890.user.js
 // @downloadURL  http://userscripts.org/scripts/source/129890.user.js
 // @require      http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
