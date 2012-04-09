@@ -2,7 +2,7 @@
 // @name         FaceBlamer
 // @namespace    FaceBlamer
 // @description  We don't like, we blame.
-// @version      0.7
+// @version      0.8
 // @updateURL    http://userscripts.org/scripts/source/129890.user.js
 // @downloadURL  http://userscripts.org/scripts/source/129890.user.js
 // @require      http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
@@ -192,37 +192,46 @@ function run() {
                     return
                 };
                 var ad = shuffled_ads.pop();
-
+                
                 $(this).find('.title').html(ad.title);
                 $(this).find('.body').html(ad.body);
-                $(this).find('.fbEmuContext').remove();
-                $(this).find('.adInfo a').remove();
-                $(this).find('.emuEvent1').removeAttr('onmousedown');
-                $(this).find('.emuEvent1').attr('href', mothership);
-                $(this).find('.uiIconText').remove();
-                $(this).find('.fbEmuContext').remove();
-
+                
                 var data_url = 'data:image/jpg;base64,' + ad.img;
                 $(this).find('.img').attr('src', data_url);
+                
+                
+                $(this).find('.adInfo a').remove();
+                $(this).find('.emuEventfad_fanpageclick').removeAttr('onmousedown');
+                $(this).find('.emuEventfad_fanpageclick').attr('href', mothership);
+                $(this).find('.emuEvent1').removeAttr('onmousedown');
+                $(this).find('.emuEvent1').attr('href', mothership);
+
             };
 
             ad_divs = $('.fbEmuTitleBodyImageDiv');
-
             if (ad_divs.length > 0) {
                 ad_divs.each(swap_ad);
                 do_ads = false;
             }
+            
+            $('.fbEmuContext').remove();
+            $('.uiIconText').remove();
+            $('egoRefreshAds').remove();
         }
     };
 
     var content = document.getElementById('content');
+    var count = 0;
 
     if (content) {
         var t;
 
         content.addEventListener('DOMNodeInserted', function() {
             clearTimeout(t);
-            t = setTimeout(blame, 100);
+            
+            var rate = count < 10 ? 10 : 100;
+            t = setTimeout(blame, rate);
+            count++;
         }, false);
     }
 }
