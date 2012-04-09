@@ -2,12 +2,12 @@
 // @name         FaceBlamer
 // @namespace    FaceBlamer
 // @description  We don't like, we blame.
-// @version      0.2
+// @version      0.5
 // @updateURL    http://userscripts.org/scripts/source/129890.user.js
 // @downloadURL  http://userscripts.org/scripts/source/129890.user.js
 // @require      http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
-// @include      http://*.facebook.com/284772814919879
-// @include      http://*.facebook.com/284772814919879/*
+// @include      http://*.facebook.com/groups/284772814919879
+// @include      http://*.facebook.com/groups/284772814919879/*
 // ==/UserScript==
 
 var strings = {
