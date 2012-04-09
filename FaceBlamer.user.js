@@ -2,9 +2,12 @@
 // @name         FaceBlamer
 // @namespace    FaceBlamer
 // @description  We don't like, we blame.
+// @version      0.2
 // @require      http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
-// @include      http://*.facebook.com/*
+// @include      http://*.facebook.com/284772814919879
+// @include      http://*.facebook.com/284772814919879/*
 // ==/UserScript==
+
 var strings = {
     fr: {
         'like_substitution': new Array(/aime/, 'blâme'),
@@ -152,6 +155,8 @@ function blame() {
     };
     $('.uiUfiLikeIcon').css(blameCss);
 
+    $(this).find('.uiIconText').remove();
+    $(this).find('.fbEmuContext').remove();
 
     if (do_ads == true) {
         
@@ -162,31 +167,26 @@ function blame() {
             if (shuffled_ads.length == 0) { return };
             var ad = shuffled_ads.pop();
             
-            //$(this).find('.clearfix').remove();
-            
             $(this).find('.title').html(ad.title);
             $(this).find('.body').html(ad.body);
             $(this).find('.fbEmuContext').remove();
             $(this).find('.adInfo a').remove();
-            //$(this).find('.adInfo a').removeAttr('onmousedown');
-            //$(this).find('.adInfo a').attr('href', mothership );
             $(this).find('.emuEvent1').removeAttr('onmousedown');
             $(this).find('.emuEvent1').attr('href', mothership);
-            //$(this).find('.emuEvent1').text('Blame');
+            $(this).find('.uiIconText').remove();
+            $(this).find('.fbEmuContext').remove();
             
             var data_url =  'data:image/jpg;base64,' + ad.img ;
             $(this).find('.img').attr('src',data_url);
         };
         
         ad_divs = $('.fbEmuTitleBodyImageDiv');
-        //GM_log(ad_divs + ' ' + ad_divs.length);
         
         if (ad_divs.length > 0) {
             ad_divs.each(swap_ad);
             do_ads = false;
         }
     }
-    //slow_flag++;
 }
 
 
@@ -194,10 +194,6 @@ var content = document.getElementById('content');
 
 if (content) {
     var t;
-    
-    //blame();
-    
-    //var interval = slow_flag > 3 ? 100 : 10;
 
     content.addEventListener('DOMNodeInserted', function() {
         clearTimeout(t);
