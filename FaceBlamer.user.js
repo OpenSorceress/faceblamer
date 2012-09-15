@@ -2,12 +2,11 @@
 // @name         FaceBlamer
 // @namespace    FaceBlamer
 // @description  We don't like, we blame.
-// @version      0.9
+// @version      0.10
 // @updateURL    http://userscripts.org/scripts/source/129890.user.js
 // @downloadURL  http://userscripts.org/scripts/source/129890.user.js
 // @include      http://*.facebook.com/groups/284772814919879
 // @include      http://*.facebook.com/groups/284772814919879/*
-// @include      http://www.facebook.com/groups/284772814919879/
 // ==/UserScript==
 
 // Include jQuery manually as Google Chrome doesn't support @require 
@@ -152,13 +151,14 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
         $('.cmnt_like_link').each(blame_button);
 
         // "You and 5 others blame this".
-        $('.UIImageBlock_ICON_Content').contents().filter(function() {
+  
+        $('#pagelet_group_mall .UIImageBlock_ICON_Content').contents().filter(function() {
             return this.nodeType == 3
         }).wrap("<span id='blame'></span>");
 
         var s = strings[lang]['like_substitution'];
-
-        $('.UIImageBlock_ICON_Content span').text(function(i, txt) {
+        
+        $('#blame').text(function(i, txt) {
             return txt.replace(s[0], s[1]);
         });
 
@@ -212,6 +212,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
 
     if (content) {
         var t;
+        
         content.addEventListener('DOMNodeInserted', function() {
             clearTimeout(t);
             var rate = count < 10 ? 10 : 100;
