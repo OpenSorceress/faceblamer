@@ -2,7 +2,7 @@
 // @name         FaceBlamer
 // @namespace    FaceBlamer
 // @description  We don't like, we blame.
-// @version      0.10
+// @version      0.12
 // @updateURL    http://userscripts.org/scripts/source/129890.user.js
 // @downloadURL  http://userscripts.org/scripts/source/129890.user.js
 // @include      http://*.facebook.com/groups/284772814919879
@@ -40,6 +40,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             'like': 'Blame',
             'unlike': 'Unblame'
         }
+    };
+    
+    var res = {
+       fr : /J'aime/,
+       en : /Like this/
     };
     
     var ads = [
@@ -123,33 +128,44 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
     if (!strings[lang]) {
         lang = 'en'
     }
-    
+    var str = strings[lang];
     var mothership = 'http://blog.iblamethepatriarchy.com';
     
     var shuffle = function (a, b) { return (parseInt(Math.random() * 10) % 2); }
 
-    var blame_button = function(index) {
-
-        var str = strings[lang];
-        var re = /unlike/;
-
-        if (re.test($(this).attr('name'))) {
-            //Unlike --> exculpation.
-            $(this).find('.default_message').html(str['unlike']);
-            $(this).find('.saving_message').html(str['like']);
+    var blame_button = function() {
+     
+        var re  = res[lang];
+        
+        var title = $(this).attr('title');
+        
+        var is_item    = /item/.test(title);
+        var is_comment = /comment/.test(title);
+        
+        if (is_item) {
+            // It's a post
+            if (/Like/.test(title)) {
+                //Like --> blame.
+                $(this).find('span').html(str['like']);
+            } else {
+                // Unlike --> unblame
+                $(this).find('span').html(str['unlike']);
+            }
         } else {
-            //Like --> blame.
-            $(this).find('.default_message').html(str['like']);
-            $(this).find('.saving_message').html(str['unlike']);
+             // It's a comment
+             console.log($(this).html());
+             $(this).html(str['like']);
         }
     }
 
-    var blame = function() {
+    var blame = function(ad_flag) {
 
         // Blame post and comments on post.
-        $('.like_link').each(blame_button);
-        $('.cmnt_like_link').each(blame_button);
-
+        $('.UFILikeLink').each(blame_button);
+        //$('a[title="Like this comment"]').each(blame_button);
+        $('a[title="Like this comment"]').html(str['like']);
+        $('a[title="Unlike this comment"]').html(str['unlike']);
+        
         // "You and 5 others blame this".
   
         $('#pagelet_group_mall .UIImageBlock_ICON_Content').contents().filter(function() {
@@ -167,9 +183,11 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             'background-image': 'url(data:image/png;base64,' + blameThumbs + ')',
             'background-position': '0px 0px'
         };
-        $('.uiUfiLikeIcon').css(blameCss);
+        $('.UFILikeIcon').css(blameCss);
 
-        if (do_ads == true) {
+         console.log('do_ads' + do_ads);
+         console.log('ad_flag' + ad_flag);
+        if (ad_flag == true && do_ads == true) {
             var shuffled_ads = ads.sort(shuffle).slice();
             var swap_ad = function() {
 
@@ -178,10 +196,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 };
                 var ad = shuffled_ads.pop();
                 
-                var ad_divs = $('.fbEmuTitleBodyImageDiv');
+                //var ad_divs = $('.fbEmuTitleBodyImageDiv');
             
+                //Simple ads with title and graphic
                 $(this).find('.title').html(ad.title);
                 $(this).find('.body').html(ad.body);
+                
+                //Ads with small icon and regular graphic
+                $(this).find('.actorName').html(ad.title);
+                $(this).find('.messageBody').html(ad.body);
+                $(this).find('.textWithMedia > a').remove();
                 
                 var data_url = 'data:image/jpg;base64,' + ad.img;
                 $(this).find('.img').attr('src', data_url);
@@ -192,10 +216,16 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 $(this).find('.emuEventfad_fanpageclick').attr('href', mothership);
                 $(this).find('.emuEvent1').removeAttr('onmousedown');
                 $(this).find('.emuEvent1').attr('href', mothership);
+                
+                //ads with icon
+                $(this).find('.uiPhotoThumb').attr('href', mothership); 
+                $(this).find('.emuEventfad_strphotolinkclickevent').attr('href', mothership); 
+                $(this).find('.emuEventfad_strobjclick').attr('href', mothership); 
 
                 $(this).find('.fbEmuContext').remove();
                 $(this).find('.inline .uiIconText').remove();
                 $(this).find('egoRefreshAds').remove();
+                $(this).find('bassLike').remove();
             };
             
             var ad_divs = $('.ego_unit_container .ego_unit');
@@ -206,17 +236,21 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             }
         }
     };
+    
+   $(document).ready(blame(false)); 
 
     var content = document.getElementById('content');
     var count = 0;
-
+    
     if (content) {
         var t;
+        
+       //console.log($('a[href="/groups/284772814919879/"]').html());//addEventListener('click', function () { do_ads = true });
         
         content.addEventListener('DOMNodeInserted', function() {
             clearTimeout(t);
             var rate = count < 10 ? 10 : 100;
-            t = setTimeout(blame, rate);
+            t = setTimeout(blame(true), rate);
             count++;
         }, false);
     }
