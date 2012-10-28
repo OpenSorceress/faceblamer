@@ -2,7 +2,7 @@
 // @name         FaceBlamer
 // @namespace    FaceBlamer
 // @description  We don't like, we blame.
-// @version      0.11
+// @version      0.12
 // @updateURL    http://userscripts.org/scripts/source/129890.user.js
 // @downloadURL  http://userscripts.org/scripts/source/129890.user.js
 // @include      http://*.facebook.com/groups/284772814919879
@@ -168,7 +168,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
         }
     }
 
-    var blame = function() {
+    var blame = function(ad_flag) {
 
         // Blame post and comments on post.
         $('.UFILikeLink').each(blame_button);
@@ -193,21 +193,29 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             'background-image': 'url(data:image/png;base64,' + blameThumbs + ')',
             'background-position': '0px 0px'
         };
-        $('.uiUfiLikeIcon').css(blameCss);
+        $('.UFILikeIcon').css(blameCss);
 
-        if (do_ads == true) {
+        if (ad_flag == true && do_ads == true) {
+         
             var shuffled_ads = ads.sort(shuffle).slice();
+            
             var swap_ad = function() {
 
                 if (shuffled_ads.length == 0) {
                     return
                 };
                 var ad = shuffled_ads.pop();
-                
-                var ad_divs = $('.fbEmuTitleBodyImageDiv');
+                console.log(ad.title);
+                console.log(ad.body);
             
+                //Simple ads with title and graphic
                 $(this).find('.title').html(ad.title);
                 $(this).find('.body').html(ad.body);
+                
+                //Ads with small icon and regular graphic
+                $(this).find('.actorName').html(ad.title);
+                $(this).find('.messageBody').html(ad.body);
+                $(this).find('.textWithMedia > a').remove();
                 
                 var data_url = 'data:image/jpg;base64,' + ad.img;
                 $(this).find('.img').attr('src', data_url);
@@ -218,13 +226,20 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                 $(this).find('.emuEventfad_fanpageclick').attr('href', mothership);
                 $(this).find('.emuEvent1').removeAttr('onmousedown');
                 $(this).find('.emuEvent1').attr('href', mothership);
+                
+                //ads with icon
+                $(this).find('.uiPhotoThumb').attr('href', mothership); 
+                $(this).find('.emuEventfad_strphotolinkclickevent').attr('href', mothership); 
+                $(this).find('.emuEventfad_strobjclick').attr('href', mothership); 
 
                 $(this).find('.fbEmuContext').remove();
                 $(this).find('.inline .uiIconText').remove();
                 $(this).find('egoRefreshAds').remove();
+                $(this).find('bassLike').remove();
             };
             
             var ad_divs = $('.ego_unit_container .ego_unit');
+            console.log(ad_divs.length);
             
             if (ad_divs.length > 0) {
                 ad_divs.each(swap_ad);
@@ -232,17 +247,19 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
             }
         }
     };
+    
+    $(document).ready(blame(false)); 
 
     var content = document.getElementById('content');
     var count = 0;
-
+    
     if (content) {
         var t;
         
         content.addEventListener('DOMNodeInserted', function() {
             clearTimeout(t);
             var rate = count < 10 ? 10 : 100;
-            t = setTimeout(blame, rate);
+            t = setTimeout(blame(true), rate);
             count++;
         }, false);
     }
